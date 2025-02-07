@@ -16,6 +16,7 @@ type AppConfig struct {
 	JWTExpiration            time.Duration
 	RedisConnectionString    string
 	RedisPassword            string
+	DeepseekApiKey           string
 }
 
 func InitConfig() {
@@ -31,5 +32,6 @@ func InitConfig() {
 		JWTExpiration:         time.Hour * 24 * 90,
 		RedisConnectionString: os.Getenv("REDIS_CONNECTION"),
 		RedisPassword:         "",
+		DeepseekApiKey:        os.Getenv("DEEPSEEK_API_KEY"),
 	}
 }
