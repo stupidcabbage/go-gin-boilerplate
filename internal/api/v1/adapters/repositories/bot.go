@@ -3,29 +3,16 @@ package repositories
 import (
 	"context"
 
+	"example.com/m/internal/api/v1/core/application/services/chat_bot_service"
 	"github.com/cohesion-org/deepseek-go"
 	"github.com/cohesion-org/deepseek-go/constants"
 )
 
-const (
-	USER writerType = "user"
-	BOT  writerType = "bot"
-)
-
-type (
-	writerType string
-
-	ChatMessage struct {
-		Message string
-		Writer  writerType
-	}
-
-	BotRepository struct {
-		dpsk           *deepseek.Client
-		stopWords      []string
-		responseFormat *deepseek.ResponseFormat
-	}
-)
+type BotRepository struct {
+	dpsk           *deepseek.Client
+	stopWords      []string
+	responseFormat *deepseek.ResponseFormat
+}
 
 func NewBotRepository(dpsk *deepseek.Client, responseFormat *deepseek.ResponseFormat, stopWords ...string) *BotRepository {
 	return &BotRepository{
@@ -35,10 +22,10 @@ func NewBotRepository(dpsk *deepseek.Client, responseFormat *deepseek.ResponseFo
 	}
 }
 
-func chatMessagesToDeepseekMessages(messages ...ChatMessage) []deepseek.ChatCompletionMessage {
+func chatMessagesToDeepseekMessages(messages ...chat_bot_service.ChatMessage) []deepseek.ChatCompletionMessage {
 	msgs := make([]deepseek.ChatCompletionMessage, 0, len(messages))
 	for _, el := range messages {
-		if el.Writer == USER {
+		if el.Writer == chat_bot_service.USER {
 			msgs = append(msgs, deepseek.ChatCompletionMessage{
 				Role:    constants.ChatMessageRoleUser,
 				Content: el.Message,
@@ -54,17 +41,17 @@ func chatMessagesToDeepseekMessages(messages ...ChatMessage) []deepseek.ChatComp
 	return msgs
 }
 
-func responseMessagesToChatMessages(messages ...deepseek.ChatCompletionMessage) []ChatMessage {
-	msgs := make([]ChatMessage, 0, len(messages))
+func responseMessagesToChatMessages(messages ...deepseek.ChatCompletionMessage) []chat_bot_service.ChatMessage {
+	msgs := make([]chat_bot_service.ChatMessage, 0, len(messages))
 	for _, el := range messages {
 		if el.Role == constants.ChatMessageRoleUser {
-			msgs = append(msgs, ChatMessage{
-				Writer:  USER,
+			msgs = append(msgs, chat_bot_service.ChatMessage{
+				Writer:  chat_bot_service.USER,
 				Message: el.Content,
 			})
 		} else {
-			msgs = append(msgs, ChatMessage{
-				Writer:  BOT,
+			msgs = append(msgs, chat_bot_service.ChatMessage{
+				Writer:  chat_bot_service.BOT,
 				Message: el.Content,
 			})
 		}
@@ -73,7 +60,7 @@ func responseMessagesToChatMessages(messages ...deepseek.ChatCompletionMessage) 
 	return msgs
 }
 
-func (r *BotRepository) Chat(ctx context.Context, messages ...ChatMessage) ([]ChatMessage, error) {
+func (r *BotRepository) Chat(ctx context.Context, messages ...chat_bot_service.ChatMessage) ([]chat_bot_service.ChatMessage, error) {
 	msgs := chatMessagesToDeepseekMessages(messages...)
 
 	request := deepseek.ChatCompletionRequest{
@@ -84,19 +71,19 @@ func (r *BotRepository) Chat(ctx context.Context, messages ...ChatMessage) ([]Ch
 	}
 	response, err := r.dpsk.CreateChatCompletion(ctx, &request)
 	if err != nil {
-		return []ChatMessage{}, err
+		return []chat_bot_service.ChatMessage{}, err
 	}
 
 	responseMessage, err := deepseek.MapMessageToChatCompletionMessage(response.Choices[0].Message)
 	if err != nil {
-		return []ChatMessage{}, err
+		return []chat_bot_service.ChatMessage{}, err
 	}
 	msgs = append(msgs, responseMessage)
 
 	return responseMessagesToChatMessages(msgs...), nil
 }
 
-func (r *BotRepository) StreamChat(ctx context.Context, chanellForLastMessage chan ChatMessage, messages []ChatMessage) {
+func (r *BotRepository) StreamChat(ctx context.Context, chanellForLastMessage chan chat_bot_service.ChatMessage, messages []chat_bot_service.ChatMessage) {
 	msgs := chatMessagesToDeepseekMessages(messages...)
 
 	request := deepseek.StreamChatCompletionRequest{
@@ -119,17 +106,17 @@ func (r *BotRepository) StreamChat(ctx context.Context, chanellForLastMessage ch
 	for {
 		resp, err := stream.Recv()
 		if err != nil {
-			messages = append(messages, ChatMessage{
+			messages = append(messages, chat_bot_service.ChatMessage{
 				Message: fullMessage,
-				Writer:  BOT,
+				Writer:  chat_bot_service.BOT,
 			})
 			break
 		}
 
 		for _, choice := range resp.Choices {
 			fullMessage += choice.Delta.Content
-			chanellForLastMessage <- ChatMessage{
-				Writer:  BOT,
+			chanellForLastMessage <- chat_bot_service.ChatMessage{
+				Writer:  chat_bot_service.BOT,
 				Message: fullMessage,
 			}
 		}
