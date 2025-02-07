@@ -29,6 +29,7 @@ services:
         - DB_NAME=postgres
         - JWT_SECRET=dfnjkahfjdasnfjksdnjvdnsk
         - REDIS_CONNECTION=redis://redis:6379/0
+        - DEEPSEEK_API_KEY=none
       networks:
         - net1
   
