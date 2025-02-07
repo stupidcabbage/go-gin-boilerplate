@@ -113,7 +113,7 @@ func (r *BotRepository) StreamChat(ctx context.Context, chanellForLastMessage ch
 		return
 	}
 	defer stream.Close()
-
+	
 	var fullMessage string
 
 	for {
@@ -134,4 +134,5 @@ func (r *BotRepository) StreamChat(ctx context.Context, chanellForLastMessage ch
 			}
 		}
 	}
+	close(chanellForLastMessage)
 }
