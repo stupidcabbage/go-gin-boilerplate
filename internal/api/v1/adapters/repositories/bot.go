@@ -95,3 +95,44 @@ func (r *BotRepository) Chat(ctx context.Context, messages ...ChatMessage) ([]Ch
 
 	return responseMessagesToChatMessages(msgs...), nil
 }
+
+func (r *BotRepository) StreamChat(ctx context.Context, chanellForLastMessage chan ChatMessage, messages []ChatMessage) {
+	msgs := chatMessagesToDeepseekMessages(messages...)
+
+	request := deepseek.StreamChatCompletionRequest{
+		Messages:       msgs,
+		Temperature:    1.0,
+		Stop:           r.stopWords,
+		ResponseFormat: r.responseFormat,
+		Stream:         true,
+	}
+
+	stream, err := r.dpsk.CreateChatCompletionStream(ctx, &request)
+	if err != nil {
+		close(chanellForLastMessage)
+		return
+	}
+	defer stream.Close()
+	
+	var fullMessage string
+
+	for {
+		resp, err := stream.Recv()
+		if err != nil {
+			messages = append(messages, ChatMessage{
+				Message: fullMessage,
+				Writer:  BOT,
+			})
+			break
+		}
+
+		for _, choice := range resp.Choices {
+			fullMessage += choice.Delta.Content
+			chanellForLastMessage <- ChatMessage{
+				Writer:  BOT,
+				Message: fullMessage,
+			}
+		}
+	}
+	close(chanellForLastMessage)
+}
