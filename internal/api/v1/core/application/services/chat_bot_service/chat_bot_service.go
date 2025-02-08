@@ -15,8 +15,9 @@ type (
 	writerType string
 
 	ChatMessage struct {
-		Message string
-		Writer  writerType
+		Message   string
+		Writer    writerType
+		CreatedAt string
 	}
 
 	IBotRepository interface {
