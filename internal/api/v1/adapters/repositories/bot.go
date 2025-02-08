@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"time"
 
 	"example.com/m/internal/api/v1/core/application/services/chat_bot_service"
 	"github.com/cohesion-org/deepseek-go"
@@ -46,13 +47,15 @@ func responseMessagesToChatMessages(messages ...deepseek.ChatCompletionMessage) 
 	for _, el := range messages {
 		if el.Role == constants.ChatMessageRoleUser {
 			msgs = append(msgs, chat_bot_service.ChatMessage{
-				Writer:  chat_bot_service.USER,
-				Message: el.Content,
+				Writer:    chat_bot_service.USER,
+				Message:   el.Content,
+				CreatedAt: time.Now().Format("02.01.2006"),
 			})
 		} else {
 			msgs = append(msgs, chat_bot_service.ChatMessage{
-				Writer:  chat_bot_service.BOT,
-				Message: el.Content,
+				Writer:    chat_bot_service.BOT,
+				Message:   el.Content,
+				CreatedAt: time.Now().Format("02.01.2006"),
 			})
 		}
 	}
@@ -100,7 +103,7 @@ func (r *BotRepository) StreamChat(ctx context.Context, chanellForLastMessage ch
 		return
 	}
 	defer stream.Close()
-	
+
 	var fullMessage string
 
 	for {

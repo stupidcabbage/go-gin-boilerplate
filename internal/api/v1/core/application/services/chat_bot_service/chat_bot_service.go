@@ -2,6 +2,7 @@ package chat_bot_service
 
 import (
 	"context"
+	"time"
 
 	"example.com/m/internal/api/v1/core/application/exceptions"
 )
@@ -15,8 +16,9 @@ type (
 	writerType string
 
 	ChatMessage struct {
-		Message string
-		Writer  writerType
+		Message   string
+		Writer    writerType
+		CreatedAt string
 	}
 
 	IBotRepository interface {
@@ -25,7 +27,7 @@ type (
 
 	IStorageRepo interface {
 		GetChatByUserEmail(ctx context.Context, email string, offset int, limit int) ([]ChatMessage, error)
-		AddNewMessageToChatByEmail(ctx context.Context, email string, message ChatMessage) error
+		AddNewMessageToChatByEmail(ctx context.Context, email string, message *ChatMessage) error
 	}
 
 	ChatBotService struct {
@@ -38,6 +40,7 @@ func (s *ChatBotService) GetAnswer(ctx context.Context, email string, message *C
 	if message == nil || message.Writer != USER {
 		return nil, &exceptions.ErrInvalidQuestion
 	}
+	message.CreatedAt = time.Now().Format("02.01.2006")
 
 	lastMessages, err := s.storageRepo.GetChatByUserEmail(ctx, email, 0, 20)
 	if err != nil {
