@@ -1,23 +1,19 @@
 package dto
 
-type (
-	MessageDto struct {
-		Text string `json:"text" binding:"required"`
-	}
+type QuestionDto struct {
+	SenderEmail string `json:"sender_email" binding:"required,email,max=64,min=6"`
+	Message     string `json:"password" binding:"required,min=3"`
+}
 
-	ChatMessageDto struct {
-		Role string `json:"role" binding:"required"`
-		Text string `json:"text" binding:"required"`
-	}
+type AnswerDto struct {
+	Message string `json:"message" db:"password" binding:"required,min=3"`
+}
 
-	ChatDto struct {
-		Messages []ChatMessageDto `json:"messages" binding:"required"`
-	}
+type MessageDto struct {
+	Role    string `json:"role" binding:"required,oneof=user bot"`
+	Message string `json:"message" binding:"required"`
+}
 
-	DbMessageDto struct {
-		Email     string `db:"email"`
-		Text      string `db:"text"`
-		Role      string `db:"role"`
-		CreatedAt string `db:"created_at"`
-	}
-)
+type ChatDto struct {
+	Messages []MessageDto `json:"messages" binding:"required"`
+}
