@@ -9,3 +9,8 @@ var ErrServiceUnavailable = Error_{
 	StatusCode: 500,
 	Message:    "Service unavailable",
 }
+
+var InternalServerError = Error_{
+	StatusCode: 500,
+	Message:    "Internal server error",
+}
