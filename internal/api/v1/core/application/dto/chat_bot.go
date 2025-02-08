@@ -13,4 +13,11 @@ type (
 	ChatDto struct {
 		Messages []ChatMessageDto `json:"messages" binding:"required"`
 	}
+
+	DbMessageDto struct {
+		Email     string `db:"email"`
+		Text      string `db:"text"`
+		Role      string `db:"role"`
+		CreatedAt string `db:"created_at"`
+	}
 )
