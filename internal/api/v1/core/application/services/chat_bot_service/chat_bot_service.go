@@ -27,7 +27,7 @@ type (
 
 	IStorageRepo interface {
 		GetChatByUserEmail(ctx context.Context, email string, offset int, limit int) ([]ChatMessage, error)
-		AddNewMessageToChatByEmail(ctx context.Context, email string, message ChatMessage) error
+		AddNewMessageToChatByEmail(ctx context.Context, email string, message *ChatMessage) error
 	}
 
 	ChatBotService struct {

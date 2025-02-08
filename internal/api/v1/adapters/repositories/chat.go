@@ -40,6 +40,24 @@ func dbMessageToChatMessage(messages ...dto.DbMessageDto) []chat_bot_service.Cha
 	return msgs
 }
 
+func chatMessageToDto(message *chat_bot_service.ChatMessage, email string) *dto.DbMessageDto {
+	if message.Writer == chat_bot_service.USER {
+		return &dto.DbMessageDto{
+			Email:     email,
+			Text:      message.Message,
+			Role:      "user",
+			CreatedAt: message.CreatedAt,
+		}
+	} else {
+		return &dto.DbMessageDto{
+			Email:     email,
+			Text:      message.Message,
+			Role:      "bot",
+			CreatedAt: message.CreatedAt,
+		}
+	}
+}
+
 func (r *ChatRepo) GetChatByUserEmail(ctx context.Context, email string, offset int, limit int) ([]chat_bot_service.ChatMessage, error) {
 	query, _, _ := goqu.From("chat_messages").
 		Where(goqu.Ex{
@@ -70,4 +88,16 @@ func (r *ChatRepo) GetChatByUserEmail(ctx context.Context, email string, offset 
 	}
 
 	return dbMessageToChatMessage(messages...), nil
+}
+
+func (r *ChatRepo) AddNewMessageToChatByEmail(ctx context.Context, email string, message *chat_bot_service.ChatMessage) error {
+	msgDto := chatMessageToDto(message, email)
+	query, _, _ := goqu.Insert("chat_messages").Rows(*msgDto).ToSQL()
+	_, err := r.db.Exec(query)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
