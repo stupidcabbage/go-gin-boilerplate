@@ -39,4 +39,14 @@ jobs:
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/prod:latest
             docker stop prod || true
             docker rm prod || true
-            docker run -d --name prod -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/prod:latest
+            docker run  \
+            --env DB_HOST=${{ secrets.DB_HOST }} \
+            --env DB_PORT=${{ secrets.DB_PORT }} \
+            --env DB_USER=${{ secrets.DB_USER }} \
+            --env DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            --env DB_NAME=${{ secrets.DB_NAME }} \
+            --env JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            --env REDIS_CONNECTION=${{ secrets.REDIS_CONNECTION }} \
+            --env DEEPSEEK_API_KEY=${{ DEEPSEEK_API_KEY }} \
+            --net net1 \
+            -d --name prod -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/prod:latest
