@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 )
@@ -20,7 +21,7 @@ type AppConfig struct {
 }
 
 func InitConfig() {
-	fmt.Println(
+	log.Println(
 		fmt.Sprintf("host=%s port=%s user=%s "+
 			"password=%s dbname=%s sslmode=disable",
 			os.Getenv("DB_HOST"),
