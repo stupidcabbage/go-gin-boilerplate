@@ -37,6 +37,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/prod:latest
-            docker stop myapp || true
-            docker rm myapp || true
+            docker stop prod || true
+            docker rm prod || true
             docker run -d --name prod -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/prod:latest
