@@ -15,15 +15,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to Docker
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/prod:latest
+          tags: ${{ secrets.DOCKERHUB_TOKEN}}/prod:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKER_USERNAME }}/prod:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/prod:latest
             docker stop myapp || true
             docker rm myapp || true
-            docker run -d --name prod -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/prod:latest
+            docker run -d --name prod -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/prod:latest
