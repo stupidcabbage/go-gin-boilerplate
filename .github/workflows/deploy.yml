@@ -49,4 +49,4 @@ jobs:
             --env REDIS_CONNECTION=${{ secrets.REDIS_CONNECTION }} \
             --env DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }} \
             --net net1 \
-            -d --name prod -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/prod:latest
+            --name prod -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/prod:latest
