@@ -22,7 +22,7 @@ type AppConfig struct {
 func InitConfig() {
 	Config = AppConfig{
 		PostgresConnectionString: fmt.Sprintf("host=%s port=%s user=%s "+
-			"password=%s dbname=%s sslmode=disable",
+			"password=%s dbname=%s sslmode=enable",
 			os.Getenv("DB_HOST"),
 			os.Getenv("DB_PORT"),
 			os.Getenv("DB_USER"),
