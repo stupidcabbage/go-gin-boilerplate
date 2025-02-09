@@ -12,5 +12,6 @@ EXPOSE 8010
 
 FROM gcr.io/distroless/static-debian12
 COPY --from=build /go/bin/app /
+COPY --from=build /go/src/app/scripts /scripts/
 
 CMD ["/app"]

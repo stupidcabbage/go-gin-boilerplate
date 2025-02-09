@@ -28,6 +28,7 @@ func main() {
 	loadEnv()
 	config.InitConfig()
 	database.ConnectToDatabase()
+	database.MigrateDB()
 	cache.ConnectToRedis()
 	prom.RegisterPrometheusMetrics()
 
