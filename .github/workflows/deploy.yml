@@ -27,7 +27,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [build_and_push_to_docker_hub]
     steps:
       - name: Деплой на сервер
         uses: appleboy/ssh-action@v0.1.10
