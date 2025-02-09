@@ -24,7 +24,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_TOKEN}}/prod:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME}}/prod:latest
 
   deploy:
     runs-on: ubuntu-latest
