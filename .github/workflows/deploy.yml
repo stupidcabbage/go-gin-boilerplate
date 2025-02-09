@@ -41,9 +41,9 @@ jobs:
             docker rm prod || true
             docker run  \
             --env DB_HOST=${{ vars.DB_HOST }} \
-            --env DB_PORT=${{ vars.DB_PORT }} \
-            --env DB_USER=${{ vars.DB_USER }} \
-            --env DB_PASSWORD=${{ vars.DB_PASSWORD }} \
+            --env DB_PORT=${{ secrets.DB_PORT }} \
+            --env DB_USER=${{ secrets.DB_USER }} \
+            --env DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             --env DB_NAME=${{ vars.DB_NAME }} \
             --env JWT_SECRET=${{ secrets.JWT_SECRET }} \
             --env REDIS_CONNECTION=${{ secrets.REDIS_CONNECTION }} \
